@@ -17,7 +17,7 @@ public class BoardModel {
      * אתחול המיקומים והרדיוסים הקבועים של החורים על הלוח
      */
     private void initBoardHoles() {
-        // דוגמה להגדרת 9 חורים (ניתן להתאים לפי קואורדינטות ה-UI שלכם)
+        //  הגדרה 9 חורים (ניתן להתאים לפי קואורדינטות הלוח
         holeOccupancy.put(new Circle(0, new Point(0, 100, 100), 40), null);
         holeOccupancy.put(new Circle(1, new Point(1, 300, 100), 40), null);
         holeOccupancy.put(new Circle(2, new Point(2, 500, 100), 40), null);
