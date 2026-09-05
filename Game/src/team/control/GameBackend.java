@@ -9,7 +9,7 @@ import shared.ui_ports.GameUiPort;
 public class GameBackend {
 
     private final ScoreModel scoreModel; //Leora was here
-    private final LifeModel lifeModel;
+    private final LifeModel lifeModel; //Michael was here
     private final BoardModel boardModel;
     private final GameTimerController timerController;
 
