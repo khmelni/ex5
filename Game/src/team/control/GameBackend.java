@@ -8,7 +8,7 @@ import shared.ui_ports.GameUiPort;
 
 public class GameBackend {
 
-    private final ScoreModel scoreModel;
+    private final ScoreModel scoreModel; //Leora was here
     private final LifeModel lifeModel;
     private final BoardModel boardModel;
     private final GameTimerController timerController;
