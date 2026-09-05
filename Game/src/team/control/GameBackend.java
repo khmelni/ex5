@@ -10,7 +10,7 @@ public class GameBackend {
 
     private final ScoreModel scoreModel; //Leora was here
     private final LifeModel lifeModel; //Michael was here
-    private final BoardModel boardModel;
+    private final BoardModel boardModel; //yosef was here
     private final GameTimerController timerController; //noga was here
 
     /**
