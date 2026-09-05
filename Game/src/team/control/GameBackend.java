@@ -11,7 +11,7 @@ public class GameBackend {
     private final ScoreModel scoreModel; //Leora was here
     private final LifeModel lifeModel; //Michael was here
     private final BoardModel boardModel;
-    private final GameTimerController timerController;
+    private final GameTimerController timerController; //noga was here
 
     /**
      * הבנאי שמקבל את אובייקטי ה-Model וה-Controller
