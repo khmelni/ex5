@@ -20,6 +20,7 @@ public final class AssetRegistry {
     public static final String LIFE_GIFT = "life_gift";             // מתנת חיים
     public static final String LIFE_OBSTACLE = "life_obstacle";     // מכשול חיים
     public static final String SCORE_OBSTACLE = "score_obstacle";   // מכשול ניקוד
+    public static final String PUMBAA = "pumbaa";  // פומבה הלחצן של העכבר
 
     // ----- Internal storage -----
 
@@ -31,7 +32,7 @@ public final class AssetRegistry {
         // -------------------------------
         // רקעים ולוח המשחק
         // -------------------------------
-        map.put(GAME_BACKGROUND, "resources/whack_a_mole_board.jpg");
+        map.put(GAME_BACKGROUND, "resources/whack_a_mole_board.png");
         map.put(LIFE, "resources/Heart.jpg");
 
         // -------------------------------
@@ -41,6 +42,7 @@ public final class AssetRegistry {
         map.put(LIFE_GIFT, "resources/Heart.jpg");
         map.put(LIFE_OBSTACLE, "resources/LifeObstacle.jpg");
         map.put(SCORE_OBSTACLE, "resources/explosion.jpg");
+         map.put(PUMBAA, "resources/pumbaa.png");
 
         assets = Collections.unmodifiableMap(map);
     }

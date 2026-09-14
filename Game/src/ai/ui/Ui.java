@@ -20,6 +20,12 @@ import base.Params;
 import shared.AssetRegistry;
 import shared.MainRouter;
 import shared.ui_ports.GameUiPort;
+// הוספת אפשרות לעכבר עם תמונה של פומבה
+import java.awt.Cursor;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.Dimension;
+import java.awt.Graphics;
 
 public class Ui extends GameUiPort {
 
@@ -77,9 +83,27 @@ public class Ui extends GameUiPort {
             topBar.add(livesPanel);
             topBar.add(restartButton);
 
-            // 2. יצירת לוח המשחק - משתמשים ב-null layout כדי לתמוך במיקומים חופשיים ודינמיים!
-            JPanel gameBoard = new JPanel(null); 
-            gameBoard.setBackground(new Color(139, 69, 19));
+            // טוענים מראש את תמונת הרקע דרך ה-AssetRegistry
+            Image boardBgImage = null;
+            try {
+                String bgPath = AssetRegistry.get(AssetRegistry.GAME_BACKGROUND);
+                boardBgImage = ImageIO.read(new File(bgPath));
+            } catch (Exception e) {
+                System.out.println("LOG: לא הצלחתי לטעון את רקע הלוח: " + e.getMessage());
+            }
+            final Image finalBoardBgImage = boardBgImage; // חייב final כדי לשמש בתוך המחלקה האנונימית
+
+            JPanel gameBoard = new JPanel(null) {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    if (finalBoardBgImage != null) {
+                     // מותחים את התמונה כך שתכסה בדיוק את שטח הלוח, בכל גודל שהוא
+                      g.drawImage(finalBoardBgImage, 0, 0, getWidth(), getHeight(), this);
+                     }
+                 }
+            };
+            gameBoard.setBackground(new Color(139, 69, 19)); // צבע גיבוי - יוצג רק אם התמונה לא נטענה
 
             // יצירת 9 תוויות ריקות שממתינות להצגת הדמויות
             characterLabels = new JLabel[9];
@@ -112,6 +136,7 @@ public class Ui extends GameUiPort {
 
             window.setLocationRelativeTo(null);
             window.setVisible(true);
+            setPumbaaCursor();
         });
     }
 
@@ -241,5 +266,27 @@ public class Ui extends GameUiPort {
         SwingUtilities.invokeLater(() -> {
             if (restartButton != null) restartButton.setVisible(false);
         });
+    }
+
+    private void setPumbaaCursor() {
+        try {
+            String pumbaaPath = AssetRegistry.get(AssetRegistry.PUMBAA);
+            Image originalImg = ImageIO.read(new File(pumbaaPath));
+
+            // גודל אופטימלי לסמן שהמערכת תומכת בו (בד"כ 32x32)
+            Toolkit toolkit = Toolkit.getDefaultToolkit();
+            Dimension bestSize = toolkit.getBestCursorSize(48, 48);
+            Image scaledImg = originalImg.getScaledInstance(
+                (int) bestSize.getWidth(), (int) bestSize.getHeight(), Image.SCALE_SMOOTH);
+
+            // נקודת ה"קליק" בתוך התמונה (0,0 = פינה שמאלית עליונה)
+            Point hotspot = new Point(0, 0);
+
+            Cursor pumbaaCursor = toolkit.createCustomCursor(scaledImg, hotspot, "pumbaaCursor");
+            window.setCursor(pumbaaCursor);
+
+        } catch (Exception e) {
+            System.out.println("LOG: לא הצלחתי לטעון את תמונת פומבה לסמן: " + e.getMessage());
+        }
     }
 }

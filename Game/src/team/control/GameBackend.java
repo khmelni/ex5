@@ -20,7 +20,7 @@ public class GameBackend {
                        GameTimerController timerController) {
         this.scoreModel = scoreModel;
         this.lifeModel = lifeModel;
-        this.boardModel = boardModel;
+        this.boardModel = boardModel; 
         this.timerController = timerController;
     }
 
