@@ -14,13 +14,14 @@ public final class AssetRegistry {
 
     // ----- מפתחות סימבוליים ציבוריים (בשימוש ה-Backend וה-UI) -----
 
-    public static final String GAME_BACKGROUND = "game_background"; // רקע המשחק / לוח החורים
-    public static final String LIFE = "Heart";                       // סמל הלב/חיים
-    public static final String TIMON = "timon";                     // סוריקטה רגילה (טימון)
-    public static final String LIFE_GIFT = "life_gift";             // מתנת חיים
-    public static final String LIFE_OBSTACLE = "life_obstacle";     // מכשול חיים
-    public static final String SCORE_OBSTACLE = "score_obstacle";   // מכשול ניקוד
-    public static final String PUMBAA = "pumbaa";  // פומבה הלחצן של העכבר
+    public static final String gameBackground = "game_background"; // רקע המשחק / לוח החורים
+    public static final String life = "Heart";                       // סמל הלב/חיים
+    public static final String timon = "timon";                     // סוריקטה רגילה (טימון)
+    public static final String lifeGift = "life_gift";             // מתנת חיים
+    public static final String lifeObstacle = "life_obstacle";     // מכשול חיים
+    public static final String scoreObstacle = "score_obstacle";   // מכשול ניקוד
+    public static final String hole = "hole";                       // חור (מצויר בכל מיקום חור)
+    public static final String pumbaa = "pumbaa";  // פומבה הלחצן של העכבר
 
     // ----- Internal storage -----
 
@@ -32,17 +33,18 @@ public final class AssetRegistry {
         // -------------------------------
         // רקעים ולוח המשחק
         // -------------------------------
-        map.put(GAME_BACKGROUND, "resources/whack_a_mole_board.png");
-        map.put(LIFE, "resources/Heart.jpg");
+        map.put(gameBackground, "resources/Board_no_holes.png");
+        map.put(life, "resources/Heart.png");
+        map.put(hole, "resources/hole.png");
 
         // -------------------------------
         // דמויות וסוריקטות (Sprites)
         // -------------------------------
-        map.put(TIMON, "resources/timon.png");
-        map.put(LIFE_GIFT, "resources/Heart.jpg");
-        map.put(LIFE_OBSTACLE, "resources/LifeObstacle.jpg");
-        map.put(SCORE_OBSTACLE, "resources/explosion.jpg");
-         map.put(PUMBAA, "resources/pumbaa.png");
+        map.put(timon, "resources/timon.png");
+        map.put(lifeGift, "resources/Heart.png");
+        map.put(lifeObstacle, "resources/LifeObstacle.png");
+        map.put(scoreObstacle, "resources/explosion.png");
+         map.put(pumbaa, "resources/pumbaa.png");
 
         assets = Collections.unmodifiableMap(map);
     }

@@ -30,7 +30,7 @@ public class TopBarPanel extends JPanel {
         setBackground(new Color(240, 240, 240));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        heartIcon = ImageLoader.loadScaledIcon(AssetRegistry.LIFE, 25, 25);
+        heartIcon = ImageLoader.loadScaledIcon(AssetRegistry.life, 25, 25);
 
         scoreLabel = new JLabel("Score: 0", SwingConstants.CENTER);
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 18));

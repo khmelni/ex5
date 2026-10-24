@@ -12,6 +12,7 @@ import ai.ui.panels.StatusBarPanel;
 import ai.ui.panels.TopBarPanel;
 import base.Params;
 import shared.AssetRegistry;
+import shared.BoardLayout;
 import shared.MainRouter;
 import shared.ui_ports.GameUiPort;
 
@@ -51,8 +52,12 @@ public class Ui extends GameUiPort {
             window.setSize(750, 750);
             window.setLayout(new BorderLayout());
 
+            // הגדרת הלוח (חורים, מיקומים, גדלים) נשאלת מה-Backend דרך ה-Router
+            BoardLayout layout = (BoardLayout) mainRouter.route("/game/board-info", Params.of(new Object[0]));
+
             topBar = new TopBarPanel(this::restartGame);
             gameBoard = new GameBoardPanel(
+                    layout,
                     (x, y) -> mainRouter.route("/game/click", Params.of(x, y)));
             statusBar = new StatusBarPanel();
 
@@ -67,7 +72,7 @@ public class Ui extends GameUiPort {
     }
 
     private void setPumbaaCursor() {
-        Cursor cursor = CursorFactory.createFromAsset(AssetRegistry.PUMBAA, "pumbaaCursor");
+        Cursor cursor = CursorFactory.createFromAsset(AssetRegistry.pumbaa, "pumbaaCursor");
         if (cursor != null) window.setCursor(cursor);
     }
 
@@ -88,6 +93,13 @@ public class Ui extends GameUiPort {
     @Override
     public void removeCharacter(int id) {
         SwingUtilities.invokeLater(() -> gameBoard.hideCharacter(id));
+    }
+
+    @Override
+    public void setupBoard(BoardLayout layout) {
+        SwingUtilities.invokeLater(() -> {
+            if (gameBoard != null) gameBoard.configure(layout);
+        });
     }
 
     @Override
@@ -119,5 +131,7 @@ public class Ui extends GameUiPort {
             if (topBar != null) topBar.hideStartButton();
         });
     }
+
+
 
 }

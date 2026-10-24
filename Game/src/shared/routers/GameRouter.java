@@ -35,14 +35,20 @@ public class GameRouter implements SubRouter {
                 return null;
             }
 
-            // 4. זיהוי לחיצה לפי קואורדינטות העכבר (x, y) שנשלחו מה-UI
+            // 4. לחיצה: ה-UI שולח רק מיקום יחסי בתוך הלוח (0..1), וה-Backend בודק פגיעה
             case "/click": {
-                double clickX = p.getDouble(0);
-                double clickY = p.getDouble(1);
+                double clickXRatio = p.getDouble(0);
+                double clickYRatio = p.getDouble(1);
 
-                backend.handleMouseClick(clickX, clickY);
+                backend.handleMouseClick(clickXRatio, clickYRatio);
                 return null;
             }
+
+            // 5. הגדרת הלוח הנוכחי (BoardLayout) עבור ה-UI
+            case "/board-info": {
+                return backend.getBoardInfo();
+            }
+
             
             default:
                 throw new RuntimeException("Unknown game route: " + subPath);

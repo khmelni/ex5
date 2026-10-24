@@ -2,8 +2,10 @@ package team.control;
 
 import my_base.App;
 import team.model.BoardModel;
+import team.model.Point;
 import team.model.LifeModel;
 import team.model.ScoreModel;
+import shared.BoardLayout;
 import shared.ui_ports.GameUiPort;
 
 public class GameBackend {
@@ -49,6 +51,7 @@ public class GameBackend {
         // 3. עדכון מיידי של ה-UI עם הערכים המאופסים (0 ניקוד, מקסימום חיים)
         // בנוסף, ננקה את הודעות הסטטוס ונבטיח שכפתורי ה-START GAME/OVER הישנים מוסתרים
         GameUiPort ui = GameUiPort.getInstance();
+        ui.setupBoard(boardModel.getLayout()); // חזרה ללוח ההתחלתי
         ui.updateStats(scoreModel.getCurrentScore(), lifeModel.getCurrentLife());
         ui.hideRestartButton();
         ui.setStatusText("");
@@ -60,13 +63,19 @@ public class GameBackend {
     }
 
     /**
-     * טיפול בלחיצת עכבר לפי קואורדינטות (x, y) שנשלחו מה-GameRouter
+     * טיפול בלחיצת עכבר. ה-UI מדווח רק על המיקום היחסי בתוך הלוח (xRatio, yRatio בין 0 ל-1);
+     * ה-Backend ממיר אותו למערכת הקואורדינטות של הלוח ובודק פגיעה בחור ובדמות.
      */
-    public void handleMouseClick(double x, double y) {
-        // שליחת המיקום הגיאומטרי הטהור ל-DeSpawnController לבדיקת פגיעה בחור ובדמות.
-        // ה-DeSpawnController כבר דואג לעדכן את ה-UI בצורה מסונכרנת, להסיר את הדמות
-        // ולשנות את הסטטיסטיקות מיד עם החבטה, לכן אין צורך בכפל קריאות (if-updateStats) כאן!
-        App.content().destroyer().destroyByLocation(x, y);
+    public void handleMouseClick(double xRatio, double yRatio) {
+        Point boardPoint = boardModel.toBoardPoint(xRatio, yRatio);
+        App.content().destroyer().destroyByLocation(boardPoint.getX(), boardPoint.getY());
+    }
+
+    /**
+     * הגדרת הלוח הנוכחי עבור ה-UI (נשלפת דרך ה-Router): חורים, מיקומים וגדלים.
+     */
+    public BoardLayout getBoardInfo() {
+        return boardModel.getLayout();
     }
 
     /**

@@ -21,6 +21,13 @@ public class SpawnController {
     }
 
     public Character spawnRandomCharacter() {
+        // נעילה על ה-BoardModel כדי ששינוי לוח (שמחליף את כל החורים) לא יקרה באמצע הגרלה
+        synchronized (boardModel) {
+            return spawnInternal();
+        }
+    }
+
+    private Character spawnInternal() {
         // 1. קבלת רשימת החורים שפנויים כרגע בלוח
         List<Circle> freeHoles = boardModel.getFreeHoles();
 

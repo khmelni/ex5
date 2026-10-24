@@ -1,5 +1,7 @@
 package shared.ui_ports;
 
+import shared.BoardLayout;
+
 public abstract class GameUiPort {
 
     private static GameUiPort instance;
@@ -19,6 +21,9 @@ public abstract class GameUiPort {
     public abstract void removeCharacter(int id);
     public abstract void updateStats(int score, int lives);
     public abstract void setStatusText(String text);
+
+    // בניית הלוח מחדש (הלוח גדל / איפוס): ה-Backend שולח את ההגדרה וה-UI מצייר
+    public abstract void setupBoard(BoardLayout layout);
     
     // מתודה חדשה עבור הדיאלוג המותאם
     public abstract void showGameOverDialog();

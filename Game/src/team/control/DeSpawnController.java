@@ -13,11 +13,16 @@ public class DeSpawnController {
     private final BoardModel boardModel;
     private final ScoreModel scoreModel;
     private final LifeModel lifeModel;
+    private LevelController levelController; // מוגדר מ-AppContent (אחרי יצירת הטיימר)
 
     public DeSpawnController(BoardModel boardModel, ScoreModel scoreModel, LifeModel lifeModel) {
         this.boardModel = boardModel;
         this.scoreModel = scoreModel;
         this.lifeModel = lifeModel;
+    }
+
+    public void setLevelController(LevelController levelController) {
+        this.levelController = levelController;
     }
 
     /**
@@ -52,6 +57,9 @@ public class DeSpawnController {
 
                     if (this.lifeModel.isGameOver()) {
                         handleGameOver(ui);
+                    } else if (this.levelController != null) {
+                        // אם הניקוד הגיע לסף הבא - הלוח גדל
+                        this.levelController.checkLevelUp();
                     }
 
                     System.out.println("The hit in character [Hit] ' " + hole.getId());
