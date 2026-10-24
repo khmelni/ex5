@@ -84,4 +84,14 @@ public class GameBackend {
     public void tick(double dt) {
         // הזמנים מנוהלים בתוך ה-GameTimerController
     }
+        // שמירה של ניקוד לטבלת ניקוד
+    public void saveScoreToHallOfFame(String playerName) {
+    int finalScore = this.scoreModel.getCurrentScore();
+    App.content().hallOfFameController().addScore(playerName, finalScore);
+    }
+
+    public String[][] getHallOfFameTop(int n) {
+        return App.content().hallOfFameController().getTopScores(n);
+    }
+
 }

@@ -3,11 +3,14 @@ package ai.ui;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import ai.ui.assets.CursorFactory;
 import ai.ui.dialogs.GameOverDialog;
 import ai.ui.panels.GameBoardPanel;
+import ai.ui.panels.LandingPanel;
 import ai.ui.panels.StatusBarPanel;
 import ai.ui.panels.TopBarPanel;
 import base.Params;
@@ -15,6 +18,9 @@ import shared.AssetRegistry;
 import shared.BoardLayout;
 import shared.MainRouter;
 import shared.ui_ports.GameUiPort;
+import java.awt.CardLayout;
+
+
 
 /**
  * ה-Ui הראשי: מרכיב את החלון מהחלקים (TopBar, Board, StatusBar),
@@ -30,6 +36,12 @@ public class Ui extends GameUiPort {
 
     private MainRouter mainRouter;
     private int currentScore = 0;
+    // תוספת של הטבלת ניקוד
+    private LandingPanel landingPanel;
+    private CardLayout cardLayout;
+    private JPanel rootPanel;
+
+    
 
     public Ui() {
         GameUiPort.setInstance(this);
@@ -61,12 +73,28 @@ public class Ui extends GameUiPort {
                     (x, y) -> mainRouter.route("/game/click", Params.of(x, y)));
             statusBar = new StatusBarPanel();
 
-            window.add(topBar, BorderLayout.NORTH);
-            window.add(gameBoard, BorderLayout.CENTER);
-            window.add(statusBar, BorderLayout.SOUTH);
+            //window.add(topBar, BorderLayout.NORTH);
+            //window.add(gameBoard, BorderLayout.CENTER);
+            //window.add(statusBar, BorderLayout.SOUTH);
+
+            JPanel gamePanel = new JPanel(new BorderLayout());
+            gamePanel.add(topBar, BorderLayout.NORTH);
+            gamePanel.add(gameBoard, BorderLayout.CENTER);
+            gamePanel.add(statusBar, BorderLayout.SOUTH);
+
+            landingPanel = new LandingPanel(this::startGameFromLanding);
+
+            cardLayout = new CardLayout();
+            rootPanel = new JPanel(cardLayout);
+            rootPanel.add(landingPanel, "landing");
+            rootPanel.add(gamePanel, "game");
+
+            window.setContentPane(rootPanel);
+            cardLayout.show(rootPanel, "landing");
 
             window.setLocationRelativeTo(null);
             window.setVisible(true);
+            refreshHallOfFame();
             setCursor();
         });
     }
@@ -79,6 +107,19 @@ public class Ui extends GameUiPort {
     private void restartGame() {
         hideRestartButton();
         mainRouter.route("/game/reset", Params.of(new Object[0]));
+    }
+
+
+    private void startGameFromLanding() {
+    cardLayout.show(rootPanel, "game");
+    restartGame();
+    }
+
+    private void refreshHallOfFame() {
+        Object result = mainRouter.route("/game/hof", Params.of(10));
+        if (landingPanel != null && result instanceof String[][]) {
+            landingPanel.setHallOfFameRows((String[][]) result);
+        }
     }
 
     // ------------------------------------------------------------------
@@ -121,8 +162,27 @@ public class Ui extends GameUiPort {
 
     @Override
     public void showGameOverDialog() {
-        SwingUtilities.invokeLater(() ->
-                GameOverDialog.show(window, currentScore, this::restartGame, () -> System.exit(0)));
+        SwingUtilities.invokeLater(() -> {
+            promptAndSaveScore();
+            GameOverDialog.show(window, currentScore, this::restartGame, () -> System.exit(0));
+        });
+    }
+
+    /** מבקשת מהשחקן שם ושומרת את הציון הסופי ב-Hall of Fame (רק אם נצבר ניקוד). */
+    private void promptAndSaveScore() {
+        if (currentScore <= 0) return;
+
+        String playerName = JOptionPane.showInputDialog(
+                window,
+                "Game Over! Final Score: " + currentScore + "\nEnter your name for the Hall of Fame:",
+                "Hall of Fame",
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (playerName != null && !playerName.trim().isEmpty()) {
+            mainRouter.route("/game/save_score", Params.of(playerName.trim()));
+            refreshHallOfFame(); // מרענן את הטבלה בדף הנחיתה כדי שהציון החדש יופיע שם
+        }
     }
 
     @Override

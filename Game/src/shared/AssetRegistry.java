@@ -22,6 +22,7 @@ public final class AssetRegistry {
     public static final String scoreObstacle = "score_obstacle";   // מכשול ניקוד
     public static final String hole = "hole";                       // חור (מצויר בכל מיקום חור)
     public static final String hammer = "hammer";  // פטיש הלחצן של העכבר
+    public static final String instructions = "instructions";
 
     // ----- Internal storage -----
 
@@ -45,6 +46,7 @@ public final class AssetRegistry {
         map.put(lifeObstacle, "resources/LifeObstacle.png");
         map.put(scoreObstacle, "resources/ScoreObstacle.png");
         map.put(hammer, "resources/Hammer.png");
+        map.put(instructions, "resources/Instructions.png");
 
         assets = Collections.unmodifiableMap(map);
     }

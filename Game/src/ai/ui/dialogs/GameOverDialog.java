@@ -8,11 +8,19 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
+import base.Params;
+
+
 
 /** חלון "Game Over" עם הניקוד הסופי. מחזיר את בחירת השחקן דרך callbacks. */
 public final class GameOverDialog {
 
+
     private GameOverDialog() {}
+
+    
 
     public static void show(JFrame parent, int finalScore, Runnable onStartAgain, Runnable onExit) {
         JPanel content = new JPanel(new GridLayout(2, 1, 10, 10));

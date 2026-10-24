@@ -49,6 +49,17 @@ public class GameRouter implements SubRouter {
                 return backend.getBoardInfo();
             }
 
+             // 6. שמירת ניקוד בטבלת המנצחים
+            case "/save_score": {
+                String playerName = p.getString(0);
+                backend.saveScoreToHallOfFame(playerName);
+                return null;
+            }
+
+            case "/hof": {
+                int topCount = p.getInt(0);
+                return backend.getHallOfFameTop(topCount);
+            }
             
             default:
                 throw new RuntimeException("Unknown game route: " + subPath);

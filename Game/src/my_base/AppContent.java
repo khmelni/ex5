@@ -6,11 +6,13 @@ import team.control.GameTimerController;
 import team.control.SpawnController;
 import team.control.DeSpawnController;
 import team.control.LevelController;
+import team.control.HallOfFameController;
 import team.model.BoardGeometry;
 import team.model.BoardModel;
 import team.model.LevelRules;
 import team.model.LifeModel;
 import team.model.ScoreModel;
+
 
 public class AppContent {
 
@@ -23,6 +25,7 @@ public class AppContent {
     private GameTimerController gameTimerController;
     private LevelController levelController;
     private GameBackend gameBackend;
+    private HallOfFameController hallOfFameController;
 
     public void initContent() {
         // 1. אתחול מודל הלוח המרכזי והמודלים של הניקוד והחיים
@@ -58,6 +61,8 @@ public class AppContent {
             this.boardModel,
             this.gameTimerController
         );
+        // 5. אתחול של טבלת מנצחים 
+        this.hallOfFameController = new HallOfFameController();
     }
 
     // --- Getters נקיים עבור ה-UI וה-Routers ---
@@ -89,4 +94,9 @@ public class AppContent {
     public GameBackend gameBackend() {
         return this.gameBackend;
     }
+
+    public HallOfFameController hallOfFameController() {
+    return this.hallOfFameController;
+    }
+    
 }
