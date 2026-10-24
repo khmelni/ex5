@@ -1,46 +1,34 @@
 package ai.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Image;
-import java.io.File;
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import java.awt.Cursor;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import ai.ui.assets.CursorFactory;
+import ai.ui.dialogs.GameOverDialog;
+import ai.ui.panels.GameBoardPanel;
+import ai.ui.panels.StatusBarPanel;
+import ai.ui.panels.TopBarPanel;
 import base.Params;
 import shared.AssetRegistry;
 import shared.MainRouter;
 import shared.ui_ports.GameUiPort;
-// הוספת אפשרות לעכבר עם תמונה של פומבה
-import java.awt.Cursor;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.Dimension;
-import java.awt.Graphics;
 
+/**
+ * ה-Ui הראשי: מרכיב את החלון מהחלקים (TopBar, Board, StatusBar),
+ * מממש את GameUiPort (מה שה-Backend קורא לו) ומעביר אירועי משתמש לראוטר.
+ * כל הציור עצמו נעשה במחלקות שבתיקיות panels / dialogs.
+ */
 public class Ui extends GameUiPort {
 
     private JFrame window;
-    private JLabel scoreLabel;
-    private JPanel livesPanel;
-    private JLabel statusLabel;
-    private JButton restartButton;
-    
-    // נשנה את המערך הקבוע למערך גמיש של תוויות (JLabels) להצגת תמונות
-    private JLabel[] characterLabels;
+    private TopBarPanel topBar;
+    private GameBoardPanel gameBoard;
+    private StatusBarPanel statusBar;
+
     private MainRouter mainRouter;
-    private ImageIcon heartIcon;
-    
-    private int currentScore = 0; 
+    private int currentScore = 0;
 
     public Ui() {
         GameUiPort.setInstance(this);
@@ -50,9 +38,12 @@ public class Ui extends GameUiPort {
         System.out.println("LOG: UI Ports and environment configuration set.");
     }
 
+    // ------------------------------------------------------------------
+    // בניית החלון
+    // ------------------------------------------------------------------
+
     public void start(MainRouter router) {
         this.mainRouter = router;
-        loadHeartIcon();
 
         SwingUtilities.invokeLater(() -> {
             window = new JFrame("Whack-a-Mole Game");
@@ -60,79 +51,14 @@ public class Ui extends GameUiPort {
             window.setSize(750, 750);
             window.setLayout(new BorderLayout());
 
-            // 1. יצירת ה-TopBar
-            JPanel topBar = new JPanel(new java.awt.GridLayout(1, 3));
-            topBar.setBackground(new Color(240, 240, 240));
-            topBar.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-            scoreLabel = new JLabel("Score: 0", SwingConstants.CENTER);
-            scoreLabel.setFont(new Font("Arial", Font.BOLD, 18));
-            
-            livesPanel = new JPanel();
-            livesPanel.setOpaque(false);
-
-            restartButton = new JButton("START GAME");
-            restartButton.setFont(new Font("Arial", Font.BOLD, 14));
-            restartButton.setBackground(Color.GREEN);
-            restartButton.setFocusable(false);
-            restartButton.setVisible(true);
-            
-            restartButton.addActionListener(e -> restartGame());
-
-            topBar.add(scoreLabel);
-            topBar.add(livesPanel);
-            topBar.add(restartButton);
-
-            // טוענים מראש את תמונת הרקע דרך ה-AssetRegistry
-            Image boardBgImage = null;
-            try {
-                String bgPath = AssetRegistry.get(AssetRegistry.GAME_BACKGROUND);
-                boardBgImage = ImageIO.read(new File(bgPath));
-            } catch (Exception e) {
-                System.out.println("LOG: לא הצלחתי לטעון את רקע הלוח: " + e.getMessage());
-            }
-            final Image finalBoardBgImage = boardBgImage; // חייב final כדי לשמש בתוך המחלקה האנונימית
-
-            JPanel gameBoard = new JPanel(null) {
-                @Override
-                protected void paintComponent(Graphics g) {
-                    super.paintComponent(g);
-                    if (finalBoardBgImage != null) {
-                     // מותחים את התמונה כך שתכסה בדיוק את שטח הלוח, בכל גודל שהוא
-                      g.drawImage(finalBoardBgImage, 0, 0, getWidth(), getHeight(), this);
-                     }
-                 }
-            };
-            gameBoard.setBackground(new Color(139, 69, 19)); // צבע גיבוי - יוצג רק אם התמונה לא נטענה
-
-            // יצירת 9 תוויות ריקות שממתינות להצגת הדמויות
-            characterLabels = new JLabel[9];
-            for (int i = 0; i < 9; i++) {
-                characterLabels[i] = new JLabel();
-                characterLabels[i].setVisible(false); // מוסתרות כברירת מחדל
-                gameBoard.add(characterLabels[i]);
-            }
-
-            // מאזין יחיד על הלוח כולו - תופס ושולח אך ורק קואורדינטות X ו-Y טהורות של הלחיצה
-            gameBoard.addMouseListener(new java.awt.event.MouseAdapter() {
-                @Override
-                public void mousePressed(java.awt.event.MouseEvent e) {
-                    double clickX = e.getX();
-                    double clickY = e.getY();
-                    
-                    // הזרקה ישירה ועיוורת של המיקום הפיזי לראוטר (למשל 250, 330)
-                    mainRouter.route("/game/click", Params.of(clickX, clickY));
-                }
-            });
-
-            // 3. יצירת ה-StatusBar התחתון
-            statusLabel = new JLabel("", SwingConstants.CENTER);
-            statusLabel.setFont(new Font("Arial", Font.ITALIC, 14));
-            statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+            topBar = new TopBarPanel(this::restartGame);
+            gameBoard = new GameBoardPanel(
+                    (x, y) -> mainRouter.route("/game/click", Params.of(x, y)));
+            statusBar = new StatusBarPanel();
 
             window.add(topBar, BorderLayout.NORTH);
             window.add(gameBoard, BorderLayout.CENTER);
-            window.add(statusLabel, BorderLayout.SOUTH);
+            window.add(statusBar, BorderLayout.SOUTH);
 
             window.setLocationRelativeTo(null);
             window.setVisible(true);
@@ -140,153 +66,68 @@ public class Ui extends GameUiPort {
         });
     }
 
-    private void loadHeartIcon() {
-        try {
-            String heartPath = AssetRegistry.get(AssetRegistry.LIFE);
-            Image img = ImageIO.read(new File(heartPath));
-            Image scaledImg = img.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
-            this.heartIcon = new ImageIcon(scaledImg);
-        } catch (Exception e) {
-            this.heartIcon = null;
-        }
+    private void setPumbaaCursor() {
+        Cursor cursor = CursorFactory.createFromAsset(AssetRegistry.PUMBAA, "pumbaaCursor");
+        if (cursor != null) window.setCursor(cursor);
     }
 
     private void restartGame() {
-        hideRestartButton(); 
+        hideRestartButton();
         mainRouter.route("/game/reset", Params.of(new Object[0]));
     }
 
-    @Override
-    public void showGameOverDialog() {
-        SwingUtilities.invokeLater(() -> {
-            JPanel gameOverPanel = new JPanel(new java.awt.GridLayout(2, 1, 10, 10));
+    // ------------------------------------------------------------------
+    // מימוש GameUiPort - נקראים מה-Backend (ת'רדים אחרים), לכן invokeLater
+    // ------------------------------------------------------------------
 
-            JLabel titleLabel = new JLabel("Game Over", SwingConstants.CENTER);
-            titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
-            titleLabel.setForeground(Color.RED);
-
-            JLabel scoreResultLabel = new JLabel("Final Score: " + currentScore, SwingConstants.CENTER);
-            scoreResultLabel.setFont(new Font("Arial", Font.BOLD, 18));
-
-            gameOverPanel.add(titleLabel);
-            gameOverPanel.add(scoreResultLabel);
-
-            Object[] options = {"Start Again", "Exit"};
-
-            int choice = JOptionPane.showOptionDialog(
-                    window, gameOverPanel, "Game Over",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-                    null, options, options
-            );
-
-            if (choice == 0) {
-                restartGame(); 
-            } else if (choice == 1 || choice == JOptionPane.CLOSED_OPTION) {
-                System.exit(0); 
-            }
-        });
-    }
-
-    @Override
-    public void setBackground(String key) {}
-
-    /**
-     * פונקציה זו מקבלת כעת את ה-X וה-Y האמיתיים מהמודל וממקמת את הדמות בדיוק שם!
-     */
     @Override
     public void spawnCharacter(int id, String assetKey, double x, double y) {
-        SwingUtilities.invokeLater(() -> {
-            if (id >= 0 && id < characterLabels.length) {
-                try {
-                    String imagePath = AssetRegistry.get(assetKey);
-                    Image originalImg = ImageIO.read(new File(imagePath));
-                    Image scaledImg = originalImg.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-                    
-                    characterLabels[id].setIcon(new ImageIcon(scaledImg));
-                    characterLabels[id].setText("");
-                } catch (Exception e) {
-                    characterLabels[id].setIcon(null);
-                    characterLabels[id].setText(assetKey.toUpperCase());
-                }
-                
-                // מיקום דינמי לחלוטין על המסך לפי ה-X וה-Y שהגיעו מה-SpawnController!
-                // נחסיר 60 (חצי מגודל התמונה 120) כדי שמרכז התמונה יישב בול על נקודת המרכז של החור במודל
-                int posX = (int) x - 60;
-                int posY = (int) y - 60;
-                
-                characterLabels[id].setBounds(posX, posY, 120, 120);
-                characterLabels[id].setVisible(true); // הצגת הדמות
-            }
-        });
+        SwingUtilities.invokeLater(() -> gameBoard.showCharacter(id, assetKey, x, y));
     }
 
     @Override
     public void removeCharacter(int id) {
-        SwingUtilities.invokeLater(() -> {
-            if (id >= 0 && id < characterLabels.length) {
-                characterLabels[id].setVisible(false); // הסתרת התווית כשהדמות נעלמת
-                characterLabels[id].setIcon(null);
-            }
-        });
+        SwingUtilities.invokeLater(() -> gameBoard.hideCharacter(id));
     }
 
     @Override
     public void updateStats(int score, int lives) {
         this.currentScore = score;
         SwingUtilities.invokeLater(() -> {
-            if (scoreLabel != null) scoreLabel.setText("Score: " + score);
-            if (livesPanel != null) {
-                livesPanel.removeAll();
-                for (int i = 0; i < lives; i++) {
-                    livesPanel.add(new JLabel(heartIcon != null ? heartIcon : new ImageIcon()));
-                }
-                livesPanel.revalidate();
-                livesPanel.repaint();
-            }
+            if (topBar == null) return;
+            topBar.setScore(score);
+            topBar.setLives(lives);
         });
     }
 
     @Override
     public void setStatusText(String text) {
         SwingUtilities.invokeLater(() -> {
-            if (statusLabel != null) statusLabel.setText(text);
+            if (statusBar != null) statusBar.setStatus(text);
         });
     }
 
     @Override
-    public void log(String message) {
-        System.out.println("[UI Log] " + message);
+    public void showGameOverDialog() {
+        SwingUtilities.invokeLater(() ->
+                GameOverDialog.show(window, currentScore, this::restartGame, () -> System.exit(0)));
+    }
+
+    @Override
+    public void hideRestartButton() {
+        SwingUtilities.invokeLater(() -> {
+            if (topBar != null) topBar.hideStartButton();
+        });
     }
 
     @Override
     public void showRestartButton() {}
 
     @Override
-    public void hideRestartButton() {
-        SwingUtilities.invokeLater(() -> {
-            if (restartButton != null) restartButton.setVisible(false);
-        });
-    }
+    public void setBackground(String key) {}
 
-    private void setPumbaaCursor() {
-        try {
-            String pumbaaPath = AssetRegistry.get(AssetRegistry.PUMBAA);
-            Image originalImg = ImageIO.read(new File(pumbaaPath));
-
-            // גודל אופטימלי לסמן שהמערכת תומכת בו (בד"כ 32x32)
-            Toolkit toolkit = Toolkit.getDefaultToolkit();
-            Dimension bestSize = toolkit.getBestCursorSize(48, 48);
-            Image scaledImg = originalImg.getScaledInstance(
-                (int) bestSize.getWidth(), (int) bestSize.getHeight(), Image.SCALE_SMOOTH);
-
-            // נקודת ה"קליק" בתוך התמונה (0,0 = פינה שמאלית עליונה)
-            Point hotspot = new Point(0, 0);
-
-            Cursor pumbaaCursor = toolkit.createCustomCursor(scaledImg, hotspot, "pumbaaCursor");
-            window.setCursor(pumbaaCursor);
-
-        } catch (Exception e) {
-            System.out.println("LOG: לא הצלחתי לטעון את תמונת פומבה לסמן: " + e.getMessage());
-        }
+    @Override
+    public void log(String message) {
+        System.out.println("[UI Log] " + message);
     }
 }
