@@ -15,17 +15,14 @@ public abstract class GameUiPort {
         return instance;
     }
 
-    public abstract void setBackground(String key);
     public abstract void spawnCharacter(int id, String assetKey, double x, double y);
     public abstract void removeCharacter(int id);
     public abstract void updateStats(int score, int lives);
     public abstract void setStatusText(String text);
-    public abstract void log(String message);
     
     // מתודה חדשה עבור הדיאלוג המותאם
     public abstract void showGameOverDialog();
 
-    // נשארים בפורט למען תאימות קוד, אך לא יעשו דבר ב-UI
-    public abstract void showRestartButton();
+    // מתודה ישנה בשימוש
     public abstract void hideRestartButton();
 }

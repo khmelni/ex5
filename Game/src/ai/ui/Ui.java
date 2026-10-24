@@ -120,14 +120,4 @@ public class Ui extends GameUiPort {
         });
     }
 
-    @Override
-    public void showRestartButton() {}
-
-    @Override
-    public void setBackground(String key) {}
-
-    @Override
-    public void log(String message) {
-        System.out.println("[UI Log] " + message);
-    }
 }
