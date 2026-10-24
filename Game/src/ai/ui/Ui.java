@@ -67,12 +67,12 @@ public class Ui extends GameUiPort {
 
             window.setLocationRelativeTo(null);
             window.setVisible(true);
-            setPumbaaCursor();
+            setCursor();
         });
     }
 
-    private void setPumbaaCursor() {
-        Cursor cursor = CursorFactory.createFromAsset(AssetRegistry.pumbaa, "pumbaaCursor");
+    private void setCursor() {
+        Cursor cursor = CursorFactory.createFromAsset(AssetRegistry.hammer, "hammerCursor");
         if (cursor != null) window.setCursor(cursor);
     }
 
