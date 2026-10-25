@@ -17,6 +17,7 @@ import ai.ui.panels.TopBarPanel;
 import base.Params;
 import shared.AssetRegistry;
 import shared.BoardLayout;
+import shared.HallOfFameEntry;
 import shared.MainRouter;
 import shared.ui_ports.GameUiPort;
 import java.awt.CardLayout;
@@ -122,8 +123,8 @@ public class Ui extends GameUiPort {
 
     private void refreshHallOfFame() {
         Object result = mainRouter.route("/game/hof", Params.of(10));
-        if (landingPanel != null && result instanceof String[][]) {
-            landingPanel.setHallOfFameRows((String[][]) result);
+        if (landingPanel != null && result instanceof HallOfFameEntry[]) {
+            landingPanel.setHallOfFameEntries((HallOfFameEntry[]) result);
         }
     }
 

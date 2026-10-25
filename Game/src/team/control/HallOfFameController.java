@@ -6,11 +6,12 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import shared.HallOfFameEntry;
+
 public class HallOfFameController {
     private static final String TABLE_NAME = "HallOfFame";
     private static final String[] HEADINGS = {"ID", "PlayerName", "Score", "Date"};
     private static final int SCORE_COLUMN = 2;
-    public static final String[] DISPLAY_HEADINGS = {"Player", "Score", "Date"};
     private static final String FILE_PATH = "db_tables\\" + TABLE_NAME + ".xlsx";
 
     private ExcelTable table;
@@ -41,17 +42,26 @@ public class HallOfFameController {
         }
     }
 
-    public String[][] getTopScores(int n) {
-        if (table == null) return new String[0][];
+    /** n הציונים הגבוהים ביותר, מהגבוה לנמוך. */
+    public HallOfFameEntry[] getTopScores(int n) {
+        // טבלה ריקה (הפעלה ראשונה): אין מה למיין, ו-sortTable קורס על טבלה בלי שורות
+        if (table == null || table.getTableAsMatrix().length == 0) return new HallOfFameEntry[0];
         table.sortTable(SCORE_COLUMN, true);
         String[][] allRows = table.getTableAsMatrix();
         int size = Math.min(n, allRows.length);
-        String[][] displayRows = new String[size][3];
+        HallOfFameEntry[] entries = new HallOfFameEntry[size];
         for (int i = 0; i < size; i++) {
-            displayRows[i][0] = allRows[i][1];
-            displayRows[i][1] = allRows[i][2];
-            displayRows[i][2] = allRows[i][3];
+            // עמודות הטבלה השמורה: ID, PlayerName, Score, Date
+            entries[i] = new HallOfFameEntry(allRows[i][1], parseScore(allRows[i][2]), allRows[i][3]);
         }
-        return displayRows;
+        return entries;
+    }
+
+    private static int parseScore(String text) {
+        try {
+            return (int) Double.parseDouble(text.trim());
+        } catch (Exception e) {
+            return 0; // ערך פגום בטבלה - לא מפילים את התצוגה
+        }
     }
 }

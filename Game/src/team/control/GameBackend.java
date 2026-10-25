@@ -7,6 +7,7 @@ import team.model.LifeModel;
 import team.model.ScoreModel;
 import shared.AssetRegistry;
 import shared.BoardLayout;
+import shared.HallOfFameEntry;
 import shared.ui_ports.GameUiPort;
 
 public class GameBackend {
@@ -97,7 +98,7 @@ public class GameBackend {
     App.content().hallOfFameController().addScore(playerName, finalScore);
     }
 
-    public String[][] getHallOfFameTop(int n) {
+    public HallOfFameEntry[] getHallOfFameTop(int n) {
         return App.content().hallOfFameController().getTopScores(n);
     }
 

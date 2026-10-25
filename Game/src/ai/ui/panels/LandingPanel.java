@@ -21,7 +21,7 @@ import javax.swing.table.TableColumnModel;
 
 import ai.ui.assets.ImageLoader;
 import shared.AssetRegistry;
-import team.control.HallOfFameController;
+import shared.HallOfFameEntry;
 
 /**
  * דף הנחיתה של המשחק: הוראות המשחק בצד שמאל (כרגע תמונת רקע לבן - תוחלף בהמשך
@@ -30,6 +30,9 @@ import team.control.HallOfFameController;
  * לחיצה על START GAME עוברת למסך המשחק עצמו (ה-callback מתקבל מה-Ui).
  */
 public class LandingPanel extends JPanel {
+
+    // כותרות העמודות הן עניין של תצוגה, ולכן מוגדרות כאן ולא ב-Backend
+    private static final String[] columnHeadings = {"Player", "Score", "Date"};
 
     private final Image instructionsImage;
     private final DefaultTableModel hofModel;
@@ -57,8 +60,8 @@ public class LandingPanel extends JPanel {
         instructionsPanel.setBackground(Color.WHITE);
         instructionsPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
-        // --- צד ימין: טבלת Hall of Fame (מתמלאת דרך setHallOfFameRows) ---
-        hofModel = new DefaultTableModel(HallOfFameController.DISPLAY_HEADINGS, 0) {
+        // --- צד ימין: טבלת Hall of Fame (מתמלאת דרך setHallOfFameEntries) ---
+        hofModel = new DefaultTableModel(columnHeadings, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -187,11 +190,15 @@ public class LandingPanel extends JPanel {
     }
 
     /** מרענן את טבלת ה-Hall of Fame עם השורות שמגיעות מה-Backend (ממוינות וחתוכות ל-n כבר שם). */
-    public void setHallOfFameRows(String[][] rows) {
+    public void setHallOfFameEntries(HallOfFameEntry[] entries) {
         hofModel.setRowCount(0);
-        if (rows == null) return;
-        for (String[] row : rows) {
-            hofModel.addRow(row);
+        if (entries == null) return;
+        for (HallOfFameEntry entry : entries) {
+            hofModel.addRow(new String[] {
+                entry.getPlayerName(),
+                String.valueOf(entry.getScore()),
+                entry.getDate()
+            });
         }
     }
 }
