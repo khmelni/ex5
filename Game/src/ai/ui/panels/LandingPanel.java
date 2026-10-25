@@ -36,7 +36,7 @@ public class LandingPanel extends JPanel {
 
         instructionsImage = ImageLoader.loadImage(AssetRegistry.instructions);
 
-        JLabel title = new JLabel("Whack-a-Mole: Timon & Pumbaa", SwingConstants.CENTER);
+        JLabel title = new JLabel("Whack-a-Meerkat", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 24));
 
         // --- צד שמאל: תמונת הוראות (placeholder לבן כרגע) ---
