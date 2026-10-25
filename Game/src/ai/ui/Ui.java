@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import ai.ui.assets.CursorFactory;
+import ai.ui.assets.SoundPlayer;
 import ai.ui.dialogs.GameOverDialog;
 import ai.ui.panels.GameBoardPanel;
 import ai.ui.panels.LandingPanel;
@@ -57,6 +58,10 @@ public class Ui extends GameUiPort {
 
     public void start(MainRouter router) {
         this.mainRouter = router;
+
+        // טוענים את הצלילים מראש (ברקע), כדי שהחבטה הראשונה לא תתעכב
+        SoundPlayer.preload(AssetRegistry.backgroundMusic, AssetRegistry.hammerHit, AssetRegistry.gameOver);
+
 
         SwingUtilities.invokeLater(() -> {
             window = new JFrame("Whack-a-Mole Game");
@@ -192,6 +197,21 @@ public class Ui extends GameUiPort {
         });
     }
 
+    // ---- צלילים: SoundPlayer מנגן ב-thread משלו, ולכן אין צורך ב-invokeLater ----
 
+    @Override
+    public void startMusic() {
+        SoundPlayer.playLoop(AssetRegistry.backgroundMusic);
+    }
+
+    @Override
+    public void stopMusic() {
+        SoundPlayer.stopLoop();
+    }
+
+    @Override
+    public void playSound(String soundKey) {
+        SoundPlayer.playOnce(soundKey);
+    }
 
 }

@@ -5,6 +5,7 @@ import team.model.BoardModel;
 import team.model.Point;
 import team.model.LifeModel;
 import team.model.ScoreModel;
+import shared.AssetRegistry;
 import shared.BoardLayout;
 import shared.ui_ports.GameUiPort;
 
@@ -31,6 +32,7 @@ public class GameBackend {
      */
     public void start() {
         System.out.println("Starting Game [Backend]");
+        GameUiPort.getInstance().startMusic();
         this.timerController.startGameLoop();
     }
 
@@ -55,7 +57,9 @@ public class GameBackend {
         ui.updateStats(scoreModel.getCurrentScore(), lifeModel.getCurrentLife());
         ui.hideRestartButton();
         ui.setStatusText("");
-        
+        ui.startMusic(); // מוזיקת הרקע מתחילה מההתחלה בכל משחק חדש
+
+
         // 4. הפעלה מחדש של לולאת המשחק המתוזמנת
         this.timerController.startGameLoop();
         
@@ -67,6 +71,9 @@ public class GameBackend {
      * ה-Backend ממיר אותו למערכת הקואורדינטות של הלוח ובודק פגיעה בחור ובדמות.
      */
     public void handleMouseClick(double xRatio, double yRatio) {
+        // חבטת הפטיש - נשמעת בכל לחיצה על הלוח
+        GameUiPort.getInstance().playSound(AssetRegistry.hammerHit);
+        
         Point boardPoint = boardModel.toBoardPoint(xRatio, yRatio);
         App.content().destroyer().destroyByLocation(boardPoint.getX(), boardPoint.getY());
     }

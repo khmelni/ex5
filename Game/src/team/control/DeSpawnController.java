@@ -7,6 +7,7 @@ import team.model.Circle;
 import team.model.Point;
 import team.model.LifeModel;
 import team.model.ScoreModel;
+import shared.AssetRegistry;
 import shared.ui_ports.GameUiPort;
 
 public class DeSpawnController {
@@ -101,7 +102,13 @@ public class DeSpawnController {
         // 2. איפוס טקסט הסטטוס שיישאר נקי לחלוטין
         ui.setStatusText("");
         
-        // 3. הצגת הדיאלוג היחיד של סיום משחק
+        
+        // 3. המוזיקה נעצרת ומתנגן צליל ההפסד
+        ui.stopMusic();
+        ui.playSound(AssetRegistry.gameOver);
+
+        
+        // 4. הצגת הדיאלוג היחיד של סיום משחק
         ui.showGameOverDialog();
     }
 }

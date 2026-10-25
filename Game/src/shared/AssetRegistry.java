@@ -24,6 +24,11 @@ public final class AssetRegistry {
     public static final String hammer = "hammer";  // פטיש הלחצן של העכבר
     public static final String instructions = "instructions";
 
+    // צלילים (קבצי WAV) - ה-Backend משתמש במפתחות בלבד, וה-UI מנגן
+    public static final String backgroundMusic = "background_music"; // מוזיקת רקע (בלולאה)
+    public static final String hammerHit = "hammer_hit";             // חבטת הפטיש
+    public static final String gameOver = "game_over";                // צליל הפסד
+
     // ----- Internal storage -----
 
     private static final Map<String, String> assets;
@@ -48,6 +53,13 @@ public final class AssetRegistry {
         map.put(hammer, "resources/Hammer.png");
         map.put(instructions, "resources/Instructions.png");
 
+        // -------------------------------
+        // צלילים
+        // -------------------------------
+        map.put(backgroundMusic, "resources/background_music.wav");
+        map.put(hammerHit, "resources/hammer_hit.wav");
+        map.put(gameOver, "resources/game_over.wav");
+        
         assets = Collections.unmodifiableMap(map);
     }
 

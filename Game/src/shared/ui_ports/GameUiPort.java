@@ -30,4 +30,15 @@ public abstract class GameUiPort {
 
     // מתודה ישנה בשימוש
     public abstract void hideRestartButton();
+
+    // ---- צלילים: ה-Backend מחליט מתי לנגן, וה-UI מנגן בפועל ----
+
+    // מתחיל לנגן את מוזיקת הרקע (בלולאה) מההתחלה
+    public abstract void startMusic();
+
+    // עוצר את מוזיקת הרקע
+    public abstract void stopMusic();
+
+    // מנגן צליל חד-פעמי לפי מפתח מ-AssetRegistry (למשל AssetRegistry.hammerHit)
+    public abstract void playSound(String soundKey);
 }
