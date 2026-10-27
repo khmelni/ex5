@@ -54,15 +54,17 @@ public class AppContent {
         );
         this.destroyer.setLevelController(this.levelController);
 
-        // 4. אתחול מנוע המשחק הראשי (GameBackend)
+        // 4. אתחול של טבלת מנצחים 
+        this.hallOfFameController = new HallOfFameController();
+
+        // 5. אתחול מנוע המשחק הראשי (GameBackend)
         this.gameBackend = new GameBackend(
             this.scoreModel,
             this.lifeModel,
             this.boardModel,
             this.gameTimerController
         );
-        // 5. אתחול של טבלת מנצחים 
-        this.hallOfFameController = new HallOfFameController();
+
     }
 
     // --- Getters נקיים עבור ה-UI וה-Routers ---
