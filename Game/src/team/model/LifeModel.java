@@ -23,7 +23,10 @@ public class LifeModel {
             // אם זו לחיצה על Timon - לא עושים כלום (החיים לא משתנים)
             if (!(character instanceof Timon) && !(character instanceof OldTimon)) {
                 // עבור שאר הדמויות - החיים משתנים לפי ההשפעה שלהן
-                this.currentLife += character.getLifeEffect();
+                
+                if(this.currentLife<8){
+                    this.currentLife += character.getLifeEffect();
+                }            
             }
         } else {
             // אם לא לוחצים בזמן וזו דמות של Timon - מורידים חיים
