@@ -41,7 +41,8 @@ public class SpawnController {
         Character newChar;
         int chance = random.nextInt(100); // מספר אקראי בין 0 ל-99
 
-        //newChar = new Timon(); // 100% סיכוי לטימון (לצרכי בדיקה )
+        // newChar = new OldTimon(); // 100% סיכוי לטימון (לצרכי בדיקה )
+
 
         if (chance < 50) {
             newChar = new Timon(); // 50% סיכוי לטימון
