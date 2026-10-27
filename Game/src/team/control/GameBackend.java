@@ -72,6 +72,11 @@ public class GameBackend {
      * ה-Backend ממיר אותו למערכת הקואורדינטות של הלוח ובודק פגיעה בחור ובדמות.
      */
     public void handleMouseClick(double xRatio, double yRatio) {
+        // המשחק נגמר - אין חבטה ואין טיפול בלחיצה
+        if (lifeModel.isGameOver()) {
+            return;
+        }
+        
         // חבטת הפטיש - נשמעת בכל לחיצה על הלוח
         GameUiPort.getInstance().playSound(AssetRegistry.hammerHit);
         

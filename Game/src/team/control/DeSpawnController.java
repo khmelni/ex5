@@ -30,6 +30,11 @@ public class DeSpawnController {
      * הסרת דמות בלחיצה לפי קואורדינטות (x, y) טהורות מהמסך
      */
     public synchronized Character destroyByLocation(double x, double y) {
+        // המשחק נגמר - מתעלמים מכל לחיצה נוספת
+        if (lifeModel.isGameOver()) {
+            return null;
+        }
+        
         // יצירת נקודה גיאומטרית זמנית ממיקום הלחיצה של העכבר
         Point clickPoint = new Point(-1, x, y);
 
@@ -73,6 +78,11 @@ public class DeSpawnController {
 
 
     public synchronized void destroyByTimeout(Character character) {
+        // המשחק נגמר - פקיעות זמן שנשארו מתוזמנות לא מטופלות שוב (מונע הפסד כפול)
+        if (lifeModel.isGameOver()) {
+            return;
+        }
+        
         for (Map.Entry<Circle, Character> entry : boardModel.getHoleOccupancy().entrySet()) {
             if (entry.getValue() != null && entry.getValue().equals(character)) {
                 Circle hole = entry.getKey();
