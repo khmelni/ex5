@@ -22,12 +22,12 @@ public class ExcelTable {
 
     // Create a table from a given Excel file name.
     public ExcelTable(String tableName){
-        try {
-            filename = "db_tables\\" + tableName+".xlsx";
-            File file = new File(filename);   //creating a new file instance
-            FileInputStream fis = new FileInputStream(file);   //obtaining bytes from the file
-            //creating Workbook instance that refers to .xlsx file
-            XSSFWorkbook wb = new XSSFWorkbook(fis);
+        filename = "db_tables\\" + tableName+".xlsx";
+        File file = new File(filename);   //creating a new file instance
+        // try-with-resources: fis ו-wb נסגרים אוטומטית בסוף הבלוק (גם אם נזרקת חריגה)
+        try (FileInputStream fis = new FileInputStream(file);   //obtaining bytes from the file
+             //creating Workbook instance that refers to .xlsx file
+             XSSFWorkbook wb = new XSSFWorkbook(fis)) {
             XSSFSheet sheet = wb.getSheetAt(0);     //creating a Sheet object to retrieve object
             //iterating over excel file
             boolean isFirstRow = true;
@@ -92,12 +92,14 @@ public class ExcelTable {
     public ExcelTable(String tableName, String[] headings) throws Exception {
         filename = "db_tables\\" + tableName+".xlsx";
         File file = new File(filename);   //creating a new file instance
-        try {
-            FileInputStream fis = new FileInputStream(file);
+        // בדיקת קיום ישירה (file.exists) במקום לפתוח ולסגור FileInputStream רק כדי לבדוק
+        if (file.exists()) {
             throw new Exception("File is already exist!");
-        } catch (FileNotFoundException e) {
-            this.headings = headings;
-            XSSFWorkbook workbook = new XSSFWorkbook();
+        }
+
+        this.headings = headings;
+        // try-with-resources: ה-Workbook נסגר אוטומטית בסוף הבלוק (גם אם נזרקת חריגה)
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             XSSFSheet sheet = workbook.createSheet(EMPTY_FILE);
 
             Row row = sheet.createRow(0);
@@ -112,6 +114,8 @@ public class ExcelTable {
             } catch (IOException e2) {
                 e2.printStackTrace();
             }
+        } catch (IOException e3) {
+            e3.printStackTrace();
         }
     }
 
@@ -164,12 +168,17 @@ public class ExcelTable {
 
     // internal methods for sorting and comparing
 
-    private <K, V extends Comparable<? super String[]>> Comparator<Map.Entry<String, String[]>> compareStrByXValue(int index) {
+    // ה-cast ל-(Comparator<...> & Serializable) הוא תבנית מוכרת כדי שה-Comparator של הלמבדה
+    // יהיה Serializable; מכיוון ש-Comparator גנרי, הקומפיילר לא יכול לוודא את ה-cast בזמן ריצה
+    // (type erasure) - זו הסיבה ל"Unchecked cast", וה-SuppressWarnings כאן מתעד שזה מכוון ובטוח.
+    @SuppressWarnings("unchecked")
+    private Comparator<Map.Entry<String, String[]>> compareStrByXValue(int index) {
         return (Comparator<Map.Entry<String, String[]>> & Serializable)
                 (c1, c2) -> c1.getValue()[index].compareTo(c2.getValue()[index]);
     }
 
-    private <K, V extends Comparable<? super String[]>> Comparator<Map.Entry<String, String[]>> compareIntByXValue(int index) {
+    @SuppressWarnings("unchecked")
+    private Comparator<Map.Entry<String, String[]>> compareIntByXValue(int index) {
         return (Comparator<Map.Entry<String, String[]>> & Serializable)
                 (c1, c2) -> (Integer.valueOf(c1.getValue()[index])).compareTo( Integer.valueOf(c2.getValue()[index]));
     }
@@ -242,30 +251,34 @@ public class ExcelTable {
     }
 
     public void WriteToFile() {
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet(EMPTY_FILE);
+        // try-with-resources: ה-Workbook נסגר אוטומטית בסוף הבלוק (גם אם נזרקת חריגה)
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFSheet sheet = workbook.createSheet(EMPTY_FILE);
 
-        Row firstRow = sheet.createRow(0);
-        int firstRowColumn = 0;
-        for (String heading : headings) {
-            Cell keyCell = firstRow.createCell(firstRowColumn);
-            keyCell.setCellValue(heading);
-            firstRowColumn++;
-        }
-        int rowCount = 1;
-
-        for (String key : excelMap.keySet()) {
-            Row row = sheet.createRow(rowCount++);
-
-            int columnCount = 0;
-            for (String value : excelMap.get(key)) {
-                Cell valueCell = row.createCell(columnCount++);
-                valueCell.setCellValue(value);
+            Row firstRow = sheet.createRow(0);
+            int firstRowColumn = 0;
+            for (String heading : headings) {
+                Cell keyCell = firstRow.createCell(firstRowColumn);
+                keyCell.setCellValue(heading);
+                firstRowColumn++;
             }
+            int rowCount = 1;
 
-        }
-        try (FileOutputStream outputStream = new FileOutputStream(filename)) {
-            workbook.write(outputStream);
+            for (String key : excelMap.keySet()) {
+                Row row = sheet.createRow(rowCount++);
+
+                int columnCount = 0;
+                for (String value : excelMap.get(key)) {
+                    Cell valueCell = row.createCell(columnCount++);
+                    valueCell.setCellValue(value);
+                }
+
+            }
+            try (FileOutputStream outputStream = new FileOutputStream(filename)) {
+                workbook.write(outputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
