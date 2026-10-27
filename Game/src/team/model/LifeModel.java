@@ -24,7 +24,7 @@ public class LifeModel {
             if (!(character instanceof Timon) && !(character instanceof OldTimon)) {
                 // עבור שאר הדמויות - החיים משתנים לפי ההשפעה שלהן
                 
-                if(this.currentLife<8){
+                if(this.currentLife < 8){
                     this.currentLife += character.getLifeEffect();
                 }            
             }
