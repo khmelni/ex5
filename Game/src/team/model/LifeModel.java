@@ -21,13 +21,13 @@ public class LifeModel {
     public void updateLife(Character character, boolean clicked) {
         if (clicked) {
             // אם זו לחיצה על Timon - לא עושים כלום (החיים לא משתנים)
-            if (!(character instanceof Timon)) {
+            if (!(character instanceof Timon) && !(character instanceof OldTimon)) {
                 // עבור שאר הדמויות - החיים משתנים לפי ההשפעה שלהן
                 this.currentLife += character.getLifeEffect();
             }
         } else {
             // אם לא לוחצים בזמן וזו דמות של Timon - מורידים חיים
-            if (character instanceof Timon) {
+            if (character instanceof Timon || character instanceof OldTimon) {
                 this.currentLife -= Math.abs(character.getLifeEffect());
             }
         }

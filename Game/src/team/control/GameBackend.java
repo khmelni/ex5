@@ -12,10 +12,10 @@ import shared.ui_ports.GameUiPort;
 
 public class GameBackend {
 
-    private final ScoreModel scoreModel; //Leora was here
-    private final LifeModel lifeModel; //Michael was here
-    private final BoardModel boardModel; //yosef was here
-    private final GameTimerController timerController; //noga was here
+    private final ScoreModel scoreModel;
+    private final LifeModel lifeModel;
+    private final BoardModel boardModel;
+    private final GameTimerController timerController;
 
     /**
      * הבנאי שמקבל את אובייקטי ה-Model וה-Controller

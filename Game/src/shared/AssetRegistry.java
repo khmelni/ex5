@@ -24,7 +24,7 @@ public final class AssetRegistry {
     public static final String hammer = "hammer";  // פטיש הלחצן של העכבר
     public static final String instructions = "instructions";
     public static final String hallOfFameBackground = "hall_of_fame_background"; // רקע טבלת Hall of Fame
-
+    public static final String oldTimon = "old_timon";                     // סוריקטה שתי לחיצות (טימון מבוגר)
     
     // צלילים (קבצי WAV) - ה-Backend משתמש במפתחות בלבד, וה-UI מנגן
     public static final String backgroundMusic = "background_music"; // מוזיקת רקע (בלולאה)
@@ -55,6 +55,7 @@ public final class AssetRegistry {
         map.put(hammer, "resources/Hammer.png");
         map.put(instructions, "resources/Instructions.png");
         map.put(hallOfFameBackground, "resources/hallOfFame_background.png");
+        map.put(oldTimon, "resources/oldtimon.png");
 
         // -------------------------------
         // צלילים

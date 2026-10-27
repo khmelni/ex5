@@ -10,6 +10,7 @@ import team.model.LifeGift;
 import team.model.ScoreObstacle;
 import team.model.LifeObstacle;
 import shared.ui_ports.GameUiPort; 
+import team.model.OldTimon;
 
 public class SpawnController {
     private final BoardModel boardModel;
@@ -40,14 +41,16 @@ public class SpawnController {
         Character newChar;
         int chance = random.nextInt(100); // מספר אקראי בין 0 ל-99
 
-        //newChar = new Timon(); // 100% סיכוי לטימון (לצרכי בדיקה כפי שציינת)
+        //newChar = new Timon(); // 100% סיכוי לטימון (לצרכי בדיקה )
 
         if (chance < 50) {
             newChar = new Timon(); // 50% סיכוי לטימון
-        } else if (chance < 70) {
-            newChar = new ScoreObstacle(); // 20% סיכוי לפגיעה בניקוד
+        } else if (chance < 65) {
+            newChar = new ScoreObstacle(); // 15% סיכוי לפגיעה בניקוד
+        } else if (chance < 80) {
+            newChar = new LifeObstacle(); // 15% סיכוי  לפגיעה בחיים
         } else if (chance < 90) {
-            newChar = new LifeObstacle(); // 20% סיכוי  לפגיעה בחיים
+            newChar = new OldTimon(); // 10% סיכוי לטימון מבוגר
         } else {
             newChar = new LifeGift(); // 10% סיכוי לחיים
         }
@@ -73,7 +76,6 @@ public class SpawnController {
 
         System.out.println("Character is created successfully [Spawn]: " + newChar.getClass().getSimpleName() + 
                            " in hole " + chosenHole.getId());
-
         return newChar;
     }
 }
